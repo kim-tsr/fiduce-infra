@@ -18,4 +18,5 @@ module "node" {
   memory         = each.value.memory
   tags           = ["fiduce", "k3s", each.value.role]
   vm_id          = each.value.vm_id
+  datastore_id   = "vmdata"
 }
