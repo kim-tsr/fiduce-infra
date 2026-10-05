@@ -1,57 +1,20 @@
-data "terraform_remote_state" "base" {
-  backend = "local"
-  config = {
-    path = "${path.module}/../../base/terraform.tfstate"
+locals {
+  nodes = {
+    "fiduce-control"  = { ip = "10.10.20.101", gateway = "10.10.20.1", cores = 2, memory = 4096, role = "control" }
+    "fiduce-worker-1" = { ip = "10.10.20.102", gateway = "10.10.20.1", cores = 4, memory = 2048, role = "worker" }
+    "fiduce-worker-2" = { ip = "10.10.20.103", gateway = "10.10.20.1", cores = 4, memory = 2048, role = "worker" }
   }
 }
 
-resource "proxmox_virtual_environment_vm" "test" {
-  name            = "fiduce-dev-test"
-  node_name       = var.node_name
-  tags            = ["dev", "fiduce", "terraform"]
-  stop_on_destroy = true
-
-  agent {
-    enabled = false
-  }
-
-  cpu {
-    cores = 2
-    type  = "x86-64-v2-AES"
-  }
-
-  memory {
-    dedicated = 2048
-  }
-
-  disk {
-    datastore_id = "local-lvm"
-    import_from  = data.terraform_remote_state.base.outputs.debian_image_id
-    interface    = "scsi0"
-    size         = 20
-    discard      = "on"
-  }
-
-  network_device {
-    bridge = "vmbr0"
-  }
-
-  initialization {
-    ip_config {
-      ipv4 {
-        address = "${var.ip}/24"
-        gateway = var.gateway
-      }
-    }
-    user_account {
-      username = "ansible"
-      keys     = [var.ssh_public_key]
-    }
-  }
-
-  operating_system {
-    type = "l26"
-  }
-
-  serial_device {}
+module "node" {
+  source         = "../../module/vm"
+  for_each       = local.nodes
+  name           = each.key
+  node_name      = var.node_name
+  ip             = each.value.ip
+  gateway        = each.value.gateway
+  ssh_public_key = var.ssh_public_key
+  cores          = each.value.cores
+  memory         = each.value.memory
+  tags           = ["fiduce", "k3s", each.value.role]
 }

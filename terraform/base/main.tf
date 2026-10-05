@@ -1,12 +1,8 @@
-import {
-  to = proxmox_download_file.debian
-  id = "pxm/local:import/debian-13-genericcloud-amd64.qcow2"
-}
-
 resource "proxmox_download_file" "debian" {
   content_type = "import"
   datastore_id = "local"
   node_name    = var.node_name
   url          = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2"
   file_name    = "debian-13-genericcloud-amd64.qcow2"
+  overwrite    = false
 }

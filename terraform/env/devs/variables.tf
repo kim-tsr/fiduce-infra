@@ -1,11 +1,3 @@
-variable "ip" {
-  type = string
-}
-
-variable "gateway" {
-  type = string
-}
-
 variable "ssh_public_key" {
   type = string
 }
