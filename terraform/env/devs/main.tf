@@ -1,9 +1,8 @@
-resource "proxmox_download_file" "debian" {
-  content_type = "import"
-  datastore_id = "local"
-  node_name    = var.node_name
-  url          = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2"
-  file_name    = "debian-13-genericcloud-amd64.qcow2"
+data "terraform_remote_state" "base" {
+  backend = "local"
+  config = {
+    path = "${path.module}/../../base/terraform.tfstate"
+  }
 }
 
 resource "proxmox_virtual_environment_vm" "test" {
@@ -27,7 +26,7 @@ resource "proxmox_virtual_environment_vm" "test" {
 
   disk {
     datastore_id = "local-lvm"
-    import_from  = proxmox_download_file.debian.id
+    import_from  = data.terraform_remote_state.base.outputs.debian_image_id
     interface    = "scsi0"
     size         = 20
     discard      = "on"
