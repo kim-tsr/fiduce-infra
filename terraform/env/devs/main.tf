@@ -1,8 +1,8 @@
 locals {
   nodes = {
-    "fiduce-control"  = { vm_id = 100, ip = "10.10.20.101", gateway = "10.10.20.1", cores = 2, memory = 4096, role = "control" }
-    "fiduce-worker-1" = { vm_id = 101, ip = "10.10.20.102", gateway = "10.10.20.1", cores = 4, memory = 2048, role = "worker" }
-    "fiduce-worker-2" = { vm_id = 102, ip = "10.10.20.103", gateway = "10.10.20.1", cores = 4, memory = 2048, role = "worker" }
+    "fiduce-control"  = { vm_id = 100, ip = "10.10.20.101", gateway = "10.10.20.1", cores = 2, memory = 4096, role = "server" }
+    "fiduce-worker-1" = { vm_id = 101, ip = "10.10.20.102", gateway = "10.10.20.1", cores = 4, memory = 2048, role = "agent" }
+    "fiduce-worker-2" = { vm_id = 102, ip = "10.10.20.103", gateway = "10.10.20.1", cores = 4, memory = 2048, role = "agent" }
   }
 }
 
@@ -19,4 +19,9 @@ module "node" {
   tags           = ["fiduce", "k3s", each.value.role]
   vm_id          = each.value.vm_id
   datastore_id   = "vmdata"
+}
+
+resource "local_file" "hosts" {
+  filename = "${path.module}/../../../ansible/inventories/dev/hosts.yml"
+  content  = templatefile("${path.module}/inventory.yml.tftpl", {nodes = local.nodes})
 }

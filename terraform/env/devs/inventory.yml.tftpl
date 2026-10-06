@@ -1,0 +1,18 @@
+k3s_cluster:
+  children:
+    server:
+      hosts:
+%{ for name, n in nodes ~}
+%{ if n.role == "server" ~}
+        ${name}:
+          ansible_host: ${n.ip}
+%{ endif ~}
+%{ endfor ~}
+    agent:
+      hosts:
+%{ for name, n in nodes ~}
+%{ if n.role == "agent" ~}
+        ${name}:
+          ansible_host: ${n.ip}
+%{ endif ~}
+%{ endfor ~}
