@@ -16,7 +16,7 @@ module "node" {
   ssh_public_key = var.ssh_public_key
   cores          = each.value.cores
   memory         = each.value.memory
-  tags           = ["fiduce", "k3s", each.value.role]
+  tags           = ["fiduce", "k3s", "dev", each.value.role]
   vm_id          = each.value.vm_id
   datastore_id   = "vmdata"
 }

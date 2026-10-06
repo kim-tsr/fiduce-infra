@@ -13,7 +13,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   stop_on_destroy = true
 
   agent {
-    enabled = false
+    enabled = true
   }
 
   cpu {
