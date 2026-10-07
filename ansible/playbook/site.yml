@@ -8,10 +8,5 @@
         name: qemu-guest-agent
         update_cache: true
 
-    - name: Démarrer qemu-guest-agent
-      ansible.builtin.service:
-        name: qemu-guest-agent
-        state: started
-        enabled: true
 - name: Import kube cluster playbook
   ansible.builtin.import_playbook: k3s.orchestration.site
